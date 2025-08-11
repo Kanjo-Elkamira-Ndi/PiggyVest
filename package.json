@@ -1,0 +1,31 @@
+{
+  "type": "module",
+  "name": "pigybanck",
+  "version": "1.0.0",
+  "description": "backend of pigyback money app",
+  "main": "server.js",
+  "scripts": {
+    "test": "server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kanjo-Elkamira-Ndi/PiggyVest.git"
+  },
+  "author": "yves",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kanjo-Elkamira-Ndi/PiggyVest/issues"
+  },
+  "homepage": "https://github.com/Kanjo-Elkamira-Ndi/PiggyVest#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
+    "pg": "^8.16.3",
+    "resend": "^4.8.0"
+  }
+}

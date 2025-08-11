@@ -1,0 +1,9 @@
+PORT=3020
+JWT_SECRET=your_secrete_key
+NODE_ENV=production
+RESEND_API_KEY=your_resnd_key
+DB_USER=your_user_name
+DB_HOST=localhost
+DB_NAME=money
+DB_PASSWORD="your password"
+DB_PORT=5432
