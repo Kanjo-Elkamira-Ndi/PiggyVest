@@ -209,9 +209,10 @@ export const verifyAccount = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email_or_phone, password } = req.body;
-
+    console.log(req.body)
     // Input validation
     if (!email_or_phone || !password) {
+      console.log("Validation error: Missing email/phone or password");
       return res.status(400).json({ 
         success: false,
         message: "Email/phone and password are required" 
@@ -219,7 +220,7 @@ export const login = async (req, res) => {
     }
 
     const identifier = detectLoginType(email_or_phone.trim());
-
+    console.log("Detected identifier type:", identifier);
     if (identifier === "invalid") {
       return res.status(400).json({ 
         success: false,
@@ -230,7 +231,7 @@ export const login = async (req, res) => {
     // Use prepared statements for security
     let query;
     let queryParams;
-
+    console.log("Preparing database query");
     if (identifier === "email") {
       query = `SELECT * FROM users WHERE email = $1`;
       queryParams = [email_or_phone.toLowerCase().trim()];
@@ -242,13 +243,14 @@ export const login = async (req, res) => {
     // Find user
     const userResult = await pool.query(query, queryParams);
     const user = userResult.rows[0];
-
+    
     if (!user) {
       return res.status(401).json({ 
         success: false, 
         message: "Invalid credentials" 
       });
     }
+    console.log("User fetched from database:", user);
 
     // Check if account is verified
     if (!user.is_verified) {
@@ -258,16 +260,18 @@ export const login = async (req, res) => {
         message: "Account not verified. Please check your email/SMS for verification code." 
       });
     }
+    console.log("Account is verified");
 
     // Verify password
     const isPasswordValid = await bcryptjs.compare(password, user.password);
     if (!isPasswordValid) {
+      console.log('password invalid')
       return res.status(401).json({ 
         success: false, 
         message: "Invalid credentials" 
       });
     }
-
+    console.log("Password is valid");
     // Generate and set authentication cookie/token
     const authToken = generateTokenAndSetCookie(res, user.id, user.role);
 
@@ -276,7 +280,7 @@ export const login = async (req, res) => {
       `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1`,
       [user.id]
     );
-
+    console.log("Last login timestamp updated");
     // Return success response with sanitized user data
     const sanitizedUser = sanitizeUser(user);
     

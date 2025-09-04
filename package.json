@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Kanjo-Elkamira-Ndi/PiggyVest#readme",
   "dependencies": {
+    "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

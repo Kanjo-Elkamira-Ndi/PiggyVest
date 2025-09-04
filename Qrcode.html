@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code with Logo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <canvas id="finalQR" style="display:none;"></canvas>
+    <a id="downloadLink" download="qrcode.png" style="display:none;">Download QR Code</a>
+
+    <script>
+        function generateQRWithLogo(text, logoUrl) {
+            // Step 1: Generate QR code in a hidden div
+            const tempDiv = document.createElement("div");
+            new QRCode(tempDiv, {
+                text: text,
+                width: 300,
+                height: 300,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Step 2: Get the generated QR image or canvas
+            const qrElement = tempDiv.querySelector("canvas") || tempDiv.querySelector("img");
+
+            let qrImageSrc;
+            if (qrElement.tagName.toLowerCase() === "canvas") {
+                qrImageSrc = qrElement.toDataURL("image/png");
+            } else {
+                qrImageSrc = qrElement.src;
+            }
+
+            // Step 3: Draw on our final canvas
+            const canvas = document.getElementById("finalQR");
+            const ctx = canvas.getContext("2d");
+            canvas.width = 300;
+            canvas.height = 300;
+
+            const qrImage = new Image();
+            qrImage.src = qrImageSrc;
+
+            qrImage.onload = () => {
+                ctx.drawImage(qrImage, 0, 0, 300, 300);
+
+                // Draw logo in the center with transparency
+                const logoSize = 60; // px
+                const logoX = (canvas.width - logoSize) / 2;
+                const logoY = (canvas.height - logoSize) / 2;
+
+                const logo = new Image();
+                logo.src = logoUrl;
+                logo.onload = () => {
+                    ctx.globalAlpha = 0.7; // Transparency (0 = fully transparent, 1 = fully opaque)
+                    ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+                    ctx.globalAlpha = 1.0; // Reset transparency
+
+                    // Make canvas visible
+                    canvas.style.display = "block";
+
+                    // Create download link for PNG
+                    const downloadLink = document.getElementById("downloadLink");
+                    downloadLink.href = canvas.toDataURL("image/png");
+                    downloadLink.style.display = "inline-block";
+                    downloadLink.textContent = "Download QR Code";
+                };
+            };
+        }
+
+        // Usage
+        generateQRWithLogo(
+            "https://tech-event.digimarkconsulting.cm/",
+            "dims-logo.svg" // Local or online logo
+        );
+    </script>
+</body>
+</html>

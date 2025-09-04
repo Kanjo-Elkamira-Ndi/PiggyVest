@@ -14,3 +14,18 @@ export const  generateTokenAndSetCookie = (res, userId, userRole) => {
     });
     return token;
 }
+
+export const extractTokenInfo = (req) => {
+    // get id from the token
+    const token = req.headers.authorization.split(' ')[1];
+    console.log(token);
+    if (!token) {
+        return null;
+    }
+    try {
+        const decoded = jwt.verify(token, secretKey);
+        return decoded;
+    } catch (error) {
+        return null;
+    }
+}
