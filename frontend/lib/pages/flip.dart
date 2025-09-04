@@ -14,12 +14,17 @@ class FlipScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 24,
-                      color: Colors.black,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 24,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                   Row(
@@ -203,11 +208,16 @@ class FlipScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 12),
                         Expanded(
-                          child: _buildActionCard(
-                            icon: Icons.upload,
-                            label: 'Top-Up',
-                            color: Colors.purple[400]!,
-                            backgroundColor: Colors.grey[50]!,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/depositPage');
+                            },
+                            child: _buildActionCard(
+                              icon: Icons.upload,
+                              label: 'Top-Up',
+                              color: Colors.purple[400]!,
+                              backgroundColor: Colors.grey[50]!,
+                            ),
                           ),
                         ),
                       ],
@@ -439,24 +449,23 @@ class WithdrawBottomSheet extends StatelessWidget {
                     backgroundColor: Color(0xFF4ECDC4).withOpacity(0.1),
                     iconColor: Color(0xFF4ECDC4),
                   ),
-                  SizedBox(height: 16),
-                  _buildWithdrawOption(
-                    context,
-                    icon: Icons.alternate_email,
-                    title: 'To a  user',
-                    subtitle: 'Use their  tag to send directly',
-                    backgroundColor: Color(0xFF4ECDC4).withOpacity(0.1),
-                    iconColor: Color(0xFF4ECDC4),
-                  ),
-                  SizedBox(height: 16),
-                  _buildWithdrawOption(
-                    context,
-                    icon: Icons.tag,
-                    title: 'To mobile money',
-                    subtitle: 'Withdraw to any MoMo or Orange Money number',
-                    backgroundColor: Color(0xFF4ECDC4).withOpacity(0.1),
-                    iconColor: Color(0xFF4ECDC4),
-                  ),
+                  // SizedBox(height: 16),
+                  // _buildWithdrawOption(
+                  //   context,
+                  //   icon: Icons.alternate_email,
+                  //   title: 'To a  user',
+                  //   subtitle: 'Use their  tag to send directly',
+                  //   backgroundColor: Color(0xFF4ECDC4).withOpacity(0.1),
+                  //   iconColor: Color(0xFF4ECDC4),
+                  // ),
+                  // SizedBox(height: 16),
+                  // _buildWithdrawOption(
+                  //   context,
+                  //   icon: Icons.tag,\                //   title: 'To mobile money',
+                  //   subtitle: 'Withdraw to any MoMo or Orange Money number',
+                  //   backgroundColor: Color(0xFF4ECDC4).withOpacity(0.1),
+                  //   iconColor: Color(0xFF4ECDC4),
+                  // ),
                 ],
               ),
             ),
@@ -531,16 +540,16 @@ class WithdrawBottomSheet extends StatelessWidget {
     switch (option) {
       case 'To myself':
         // Navigate to self withdrawal screen
-        print('Withdraw to myself selected');
+        Navigator.pushNamed(context, '/pinEntry');
         break;
-      case 'To a  user':
-        // Navigate to  user withdrawal screen
-        print('Withdraw to  user selected');
-        break;
-      case 'To mobile money':
-        // Navigate to mobile money withdrawal screen
-        print('Withdraw to mobile money selected');
-        break;
+      // case 'To a  user':
+      //   // Navigate to  user withdrawal screen
+      //   print('Withdraw to  user selected');
+      //   break;
+      // case 'To mobile money':
+      //   // Navigate to mobile money withdrawal screen
+      //   print('Withdraw to mobile money selected');
+      //   break;
     }
   }
 }

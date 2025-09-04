@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piggyvest/apiCalls/userService.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -8,8 +9,64 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  void _fetchUserData() async {
+    try {
+      print('let start loading');
+      final data = await UserService.getUser();
+      setState(() {
+        userData = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error appropriately
+      print('Error fetching user data: $e');
+    }
+  }
+
+  String _getInitials(String? firstName, String? lastName) {
+    if (firstName == null || firstName.isEmpty) return 'U';
+    String initials = firstName[0].toUpperCase();
+    if (lastName != null && lastName.isNotEmpty) {
+      initials += lastName[0].toUpperCase();
+    }
+    return initials;
+  }
+
+  String _formatAmount(dynamic amount) {
+    if (amount == null) return '0.00';
+    return amount.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF5F5F5),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF4ECDC4),
+          ),
+        ),
+      );
+    }
+
+    final firstName = userData?['firstName'] ?? userData?['fname'] ?? 'User';
+    final lastName = userData?['lastName'] ?? userData?['lname'] ?? '';
+    final amount = userData?['amount'] ?? userData?['balance'] ?? '0.00';
+    final initials = _getInitials(firstName, lastName);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
@@ -33,28 +90,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         color: const Color(0xFF4ECDC4),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'KE',
-                            style: TextStyle(
+                            initials,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
-                            'Hi, Kanjo',
-                            style: TextStyle(
+                            'Hi, $firstName',
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(width: 4),
-                          Text('👋', style: TextStyle(fontSize: 16)),
+                          const SizedBox(width: 4),
+                          const Text('👋', style: TextStyle(fontSize: 16)),
                         ],
                       ),
                     ),
@@ -144,9 +201,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                               ),
                               const SizedBox(width: 5),
-                              const Text(
-                                '0',
-                                style: TextStyle(
+                              Text(
+                                _formatAmount(amount),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -327,7 +384,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             title: 'Savings',
                             backgroundColor: const Color(0xFFE8F5E8),
                             iconColor: const Color(0xFF4CAF50),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/savings',
+                                arguments: {'amount': userData?['amount'] ?? 0.0},
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(width: 15),
@@ -361,7 +424,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             title: 'Wallet (Flip)',
                             backgroundColor: const Color(0xFFFFF3E0),
                             iconColor: const Color(0xFFFF9800),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(context, '/flip');
+                            },
                           ),
                         ),
                       ],
@@ -388,10 +453,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           'See all',
                           style: TextStyle(
-                            color: const Color(0xFF4ECDC4),
+                            color: Color(0xFF4ECDC4),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -464,6 +529,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
+
+      // Floating Chatbot Button
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/chat');
+        },
+        backgroundColor: const Color(0xFF4ECDC4),
+        child: const Icon(
+          Icons.chat_bubble_outline,
+          color: Colors.white,
+          size: 28,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
       // Bottom Navigation
       bottomNavigationBar: Container(

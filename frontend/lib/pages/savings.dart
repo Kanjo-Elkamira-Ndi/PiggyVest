@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SavingsScreen extends StatefulWidget {
-  const SavingsScreen({Key? key}) : super(key: key);
+  final double amount;
+  const SavingsScreen({Key? key, required this.amount}) : super(key: key);
 
   @override
   State<SavingsScreen> createState() => _SavingsScreenState();
@@ -9,6 +10,14 @@ class SavingsScreen extends StatefulWidget {
 
 class _SavingsScreenState extends State<SavingsScreen> {
   bool _showMoreWays = false;
+
+  String _formatAmount(double amount) {
+    // Format the amount with commas for thousands
+    return amount.toStringAsFixed(2).replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,9 +123,9 @@ class _SavingsScreenState extends State<SavingsScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          '0',
-                          style: TextStyle(
+                        Text(
+                          _formatAmount(widget.amount),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -196,6 +205,7 @@ class _SavingsScreenState extends State<SavingsScreen> {
                         amount: 'FCFA 0',
                         onTap: () {
                           // Navigate to personal goals
+                          Navigator.pushNamed(context, '/ongoingGoals');
                         },
                       ),
                     ),
@@ -210,6 +220,7 @@ class _SavingsScreenState extends State<SavingsScreen> {
                         amount: 'FCFA 0',
                         onTap: () {
                           // Navigate to reserves
+                          Navigator.pushNamed(context, '/reserves');
                         },
                       ),
                     ),

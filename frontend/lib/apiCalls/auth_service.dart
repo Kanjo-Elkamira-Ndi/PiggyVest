@@ -57,7 +57,7 @@ class AuthService {
           "password": password,
         }),
       );
-
+      print(response.statusCode);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final token = data['token'];
@@ -65,7 +65,9 @@ class AuthService {
         // Store the token securely
         await storage.write(key: 'jwt', value: token);
 
-        return {'success': true, 'token': token};
+        return {'success': true, 'verify': true, 'token': token};
+      } else if(response.statusCode == 403){
+        return {'success': true, 'verify': false };
       } else {
         final error = jsonDecode(response.body)['error'];
         return {'success': false, 'message': error};
@@ -79,7 +81,6 @@ class AuthService {
     required String code,
   }) async {
     try {
-      // FIXED: was "localhoat" now "localhost"
       final url = Uri.parse("http://localhost:3020/api/verify-account");
 
       final response = await http.post(
@@ -104,7 +105,6 @@ class AuthService {
     required String email_or_tell,
   }) async {
     try {
-      // FIXED: was "http:localhost" now "http://localhost"
       final url = Uri.parse("http://localhost:3020/api/resend-verification");
 
       final response = await http.post(
@@ -127,7 +127,7 @@ class AuthService {
 
   // A method to retrieve the token for future requests
   static Future<String?> getToken() async {
-    return await storage.read(key: 'jwt');
+    return await storage.read(key: 'r');
   }
 
   // Additional helpful methods for token management

@@ -14,12 +14,17 @@ class ReservesScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 24,
-                      color: Colors.black,
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 24,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                   Row(

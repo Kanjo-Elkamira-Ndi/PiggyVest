@@ -337,7 +337,7 @@ class _LoginScreenState extends State<LoginScreen> {
           password: _passwordController.text.trim(),
       );
 
-      if (result['success']) {
+      if (result['success'] && result['verify']) {
         // Show success message
         Flushbar(
           messageText: Text(
@@ -354,7 +354,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
         Navigator.pushNamed(
             context,
+            '/dashboard');
+      }else if(result['success'] && !result['verify']){
+        Flushbar(
+          messageText: Text(
+            "Validate Your Account please",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.green, fontSize: 24, fontWeight: FontWeight.bold),
+          ), // "Login successful!"
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.white,
+          margin: EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP, // 👈 This makes it appear at the top
+        ).show(context);
+
+        Navigator.pushNamed(
+            context,
             '/validation');
+      }else{
+        Flushbar(
+          messageText: Text(
+            "Login Failed",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.red, fontSize: 24, fontWeight: FontWeight.bold),
+          ), // "Login successful!"
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.white,
+          margin: EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP, // 👈 This makes it appear at the top
+        ).show(context);
       }
 
       // Simulate login delay

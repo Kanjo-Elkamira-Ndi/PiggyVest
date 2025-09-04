@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:piggyvest/apiCalls/userService.dart';
 
 class TopUpScreen extends StatefulWidget {
+
+  final Map<String, dynamic> goalData;
+
+  TopUpScreen({required this.goalData});
+
   @override
   _TopUpScreenState createState() => _TopUpScreenState();
 }
@@ -8,6 +14,22 @@ class TopUpScreen extends StatefulWidget {
 class _TopUpScreenState extends State<TopUpScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.goalData); // Access your passed data here
+
+    // Add listeners to update the button state when text changes
+    _amountController.addListener(_updateButtonState);
+    _phoneController.addListener(_updateButtonState);
+  }
+
+  void _updateButtonState() {
+    setState(() {
+      // This will trigger a rebuild and update the button state
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +123,10 @@ class _TopUpScreenState extends State<TopUpScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(2),
                           gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.green, Colors.yellow, Colors.red],
-                            stops: [0.33, 0.66, 1.0],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [Colors.green, Colors.red, Colors.yellow],
+                            stops: [0.25, 0.50, .90],
                           ),
                         ),
                       ),
@@ -153,11 +175,11 @@ class _TopUpScreenState extends State<TopUpScreen> {
             SizedBox(height: 32),
 
             // Fee breakdown
-            _buildFeeRow('Amount to top up', 'FCFA 0'),
+            _buildFeeRow('Amount to top up', 'FCFA ${_amountController.text.isNotEmpty ? _amountController.text : '0'}'),
             SizedBox(height: 12),
-            _buildFeeRow('Fees', 'FCFA 0'),
+            _buildFeeRow('Fees', 'FCFA ${_calculateFees()}'),
             SizedBox(height: 12),
-            _buildFeeRow('You will be deducted', 'FCFA 0'),
+            _buildFeeRow('You will be deducted', 'FCFA ${_calculateTotal()}'),
             SizedBox(height: 12),
             _buildFeeRow('Telecom Operator', '-'),
             SizedBox(height: 24),
@@ -192,15 +214,17 @@ class _TopUpScreenState extends State<TopUpScreen> {
               height: 56,
               child: ElevatedButton(
                 onPressed:
-                    _isFormValid()
-                        ? () {
-                          // Handle top up action
-                          _showTopUpDialog();
-                        }
-                        : null,
+                _isFormValid()
+                    ? () {
+                  print("hello 1");
+                  UserService.deposite(id: widget.goalData['id'], amount: double.parse(_amountController.text), number: int.parse(_phoneController.text));
+                  // Handle top up action
+                  _showTopUpDialog();
+                }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      _isFormValid() ? Colors.teal : Colors.grey[300],
+                  _isFormValid() ? Colors.teal : Colors.grey[300],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -238,6 +262,19 @@ class _TopUpScreenState extends State<TopUpScreen> {
         ),
       ],
     );
+  }
+
+  String _calculateFees() {
+    if (_amountController.text.isEmpty) return '0';
+    double amount = double.tryParse(_amountController.text) ?? 0;
+    return (amount * 0.02).toStringAsFixed(0);
+  }
+
+  String _calculateTotal() {
+    if (_amountController.text.isEmpty) return '0';
+    double amount = double.tryParse(_amountController.text) ?? 0;
+    double fees = amount * 0.02;
+    return (amount + fees).toStringAsFixed(0);
   }
 
   bool _isFormValid() {
@@ -279,6 +316,9 @@ class _TopUpScreenState extends State<TopUpScreen> {
 
   @override
   void dispose() {
+    // Remove listeners before disposing
+    _amountController.removeListener(_updateButtonState);
+    _phoneController.removeListener(_updateButtonState);
     _amountController.dispose();
     _phoneController.dispose();
     super.dispose();

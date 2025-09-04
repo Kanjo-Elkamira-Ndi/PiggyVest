@@ -89,7 +89,7 @@ class _ValidationScreenState extends State<AccountValidationScreen>
         _showSuccessMessage(result['message'] ?? "Account validated successfully!");
         // Navigate to next screen
         await Future.delayed(Duration(seconds: 1));
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/');
       } else {
         _showErrorMessage(result['message'] ?? "Invalid verification code. Please try again.");
         _clearCode();

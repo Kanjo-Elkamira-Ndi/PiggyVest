@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:piggyvest/apiCalls/userService.dart';
 
 class CreateGoalScreen extends StatefulWidget {
   const CreateGoalScreen({Key? key}) : super(key: key);
@@ -12,11 +13,11 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
   final _formKey = GlobalKey<FormState>();
   final _goalTitleController = TextEditingController();
   final _targetAmountController = TextEditingController();
-  final _fineAmountController = TextEditingController();
+  final _finePercentageController = TextEditingController();
 
   DateTime? _selectedDate;
   String? _selectedCategory;
-  double _finePercentage = 0.0;
+  bool _isLoading = false;
 
   final List<Map<String, dynamic>> _categories = [
     {
@@ -48,17 +49,6 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
     {'name': 'Rents', 'icon': Icons.home, 'color': Color(0xFFFF8A65)},
     {'name': 'Fees', 'icon': Icons.school, 'color': Color(0xFF9575CD)},
   ];
-
-  void _calculateFinePercentage() {
-    final targetAmount = double.tryParse(_targetAmountController.text) ?? 0;
-    final fineAmount = double.tryParse(_fineAmountController.text) ?? 0;
-
-    if (targetAmount > 0) {
-      setState(() {
-        _finePercentage = (fineAmount / targetAmount) * 100;
-      });
-    }
-  }
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
@@ -93,96 +83,93 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => Container(
-            height: MediaQuery.of(context).size.height * 0.7,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Select Category',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF333333),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    'Select Category',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF333333),
-                    ),
-                  ),
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.2,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 15,
                 ),
-                Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 1.2,
-                          crossAxisSpacing: 15,
-                          mainAxisSpacing: 15,
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedCategory = category['name'];
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: category['color'].withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: _selectedCategory == category['name']
+                              ? const Color(0xFF4ECDC4)
+                              : Colors.transparent,
+                          width: 2,
                         ),
-                    itemCount: _categories.length,
-                    itemBuilder: (context, index) {
-                      final category = _categories[index];
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedCategory = category['name'];
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: category['color'].withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                              color:
-                                  _selectedCategory == category['name']
-                                      ? const Color(0xFF4ECDC4)
-                                      : Colors.transparent,
-                              width: 2,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            category['icon'],
+                            size: 40,
+                            color: category['color'],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            category['name'],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[700],
                             ),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                category['icon'],
-                                size: 40,
-                                color: category['color'],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                category['name'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
     );
   }
 
@@ -190,7 +177,7 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
   void dispose() {
     _goalTitleController.dispose();
     _targetAmountController.dispose();
-    _fineAmountController.dispose();
+    _finePercentageController.dispose();
     super.dispose();
   }
 
@@ -272,6 +259,9 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
                             if (value?.isEmpty ?? true) {
                               return 'Please enter a goal title';
                             }
+                            if (value!.length < 3) {
+                              return 'Goal title must be at least 3 characters';
+                            }
                             return null;
                           },
                         ),
@@ -282,16 +272,22 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
                         _buildInputField(
                           label: 'Target Amount',
                           controller: _targetAmountController,
-                          hint: '0.00',
+                          hint: '0',
                           keyboardType: TextInputType.number,
-                          prefixText: '\$ ',
-                          onChanged: (value) => _calculateFinePercentage(),
+                          prefixText: 'FCFA ',
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                          ],
                           validator: (value) {
                             if (value?.isEmpty ?? true) {
                               return 'Please enter target amount';
                             }
-                            if (double.tryParse(value!) == null) {
+                            final amount = double.tryParse(value!);
+                            if (amount == null || amount <= 0) {
                               return 'Please enter a valid amount';
+                            }
+                            if (amount < 1000) {
+                              return 'Minimum target amount is FCFA 1,000';
                             }
                             return null;
                           },
@@ -304,46 +300,62 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
                           onTap: _selectDate,
                           child: _buildDisplayField(
                             label: 'Withdraw Date',
-                            value:
-                                _selectedDate != null
-                                    ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                                    : 'Select date',
+                            value: _selectedDate != null
+                                ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
+                                : 'Select date',
                             icon: Icons.calendar_today,
                           ),
                         ),
 
                         const SizedBox(height: 20),
 
-                        // Breaking Plan Fine
+                        // Breaking Plan Fine (Percentage)
                         _buildInputField(
-                          label: 'Breaking Plan Fine',
-                          controller: _fineAmountController,
-                          hint: '0.00',
+                          label: 'Breaking Plan Fine (%)',
+                          controller: _finePercentageController,
+                          hint: '2',
                           keyboardType: TextInputType.number,
-                          prefixText: '\$ ',
-                          onChanged: (value) => _calculateFinePercentage(),
+                          suffixText: '%',
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                          ],
                           validator: (value) {
                             if (value?.isEmpty ?? true) {
-                              return 'Please enter fine amount';
+                              return 'Please enter fine percentage';
                             }
-                            if (double.tryParse(value!) == null) {
-                              return 'Please enter a valid amount';
+                            final percentage = double.tryParse(value!);
+                            if (percentage == null) {
+                              return 'Please enter a valid percentage';
+                            }
+                            if (percentage < 2) {
+                              return 'Minimum fine is 2%';
+                            }
+                            if (percentage > 50) {
+                              return 'Maximum fine is 50%';
                             }
                             return null;
                           },
                         ),
 
-                        // Fine percentage display
-                        if (_finePercentage > 0)
+                        // Fine amount display
+                        if (_targetAmountController.text.isNotEmpty &&
+                            _finePercentageController.text.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              'Equivalent to ${_finePercentage.toStringAsFixed(1)}% of target amount',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                                fontStyle: FontStyle.italic,
-                              ),
+                            child: Builder(
+                              builder: (context) {
+                                final target = double.tryParse(_targetAmountController.text) ?? 0;
+                                final percentage = double.tryParse(_finePercentageController.text) ?? 0;
+                                final fineAmount = (target * percentage / 100);
+                                return Text(
+                                  'Fine amount: FCFA ${fineAmount.toStringAsFixed(0)}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                );
+                              },
                             ),
                           ),
 
@@ -355,18 +367,16 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
                           child: _buildDisplayField(
                             label: 'Savings Category',
                             value: _selectedCategory ?? 'Select category',
-                            icon:
-                                _selectedCategory != null
-                                    ? _categories.firstWhere(
-                                      (cat) => cat['name'] == _selectedCategory,
-                                    )['icon']
-                                    : Icons.category,
-                            iconColor:
-                                _selectedCategory != null
-                                    ? _categories.firstWhere(
-                                      (cat) => cat['name'] == _selectedCategory,
-                                    )['color']
-                                    : Colors.grey[400],
+                            icon: _selectedCategory != null
+                                ? _categories.firstWhere(
+                                  (cat) => cat['name'] == _selectedCategory,
+                            )['icon']
+                                : Icons.category,
+                            iconColor: _selectedCategory != null
+                                ? _categories.firstWhere(
+                                  (cat) => cat['name'] == _selectedCategory,
+                            )['color']
+                                : Colors.grey[400],
                           ),
                         ),
 
@@ -377,31 +387,7 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState?.validate() ?? false) {
-                                if (_selectedDate == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Please select a withdraw date',
-                                      ),
-                                    ),
-                                  );
-                                  return;
-                                }
-                                if (_selectedCategory == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Please select a category'),
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                // Handle goal creation
-                                _createGoal();
-                              }
-                            },
+                            onPressed: _isLoading ? null : _handleCreateGoal,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF4ECDC4),
                               foregroundColor: Colors.white,
@@ -409,8 +395,18 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                               elevation: 0,
+                              disabledBackgroundColor: Colors.grey[300],
                             ),
-                            child: const Text(
+                            child: _isLoading
+                                ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                                : const Text(
                               'Create Goal',
                               style: TextStyle(
                                 fontSize: 16,
@@ -439,6 +435,8 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
     required String hint,
     TextInputType? keyboardType,
     String? prefixText,
+    String? suffixText,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
     void Function(String)? onChanged,
   }) {
@@ -457,12 +455,18 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           validator: validator,
           onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hint,
             prefixText: prefixText,
+            suffixText: suffixText,
             prefixStyle: TextStyle(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+            suffixStyle: TextStyle(
               color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
@@ -529,10 +533,9 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
                   value,
                   style: TextStyle(
                     fontSize: 16,
-                    color:
-                        value.contains('Select')
-                            ? Colors.grey[500]
-                            : Colors.grey[800],
+                    color: value.contains('Select')
+                        ? Colors.grey[500]
+                        : Colors.grey[800],
                   ),
                 ),
               ),
@@ -544,30 +547,91 @@ class _CreateGoalScreenState extends State<CreateGoalScreen> {
     );
   }
 
-  void _createGoal() {
-    // Goal creation logic here
-    final goal = {
-      'title': _goalTitleController.text,
-      'targetAmount': double.parse(_targetAmountController.text),
-      'withdrawDate': _selectedDate,
-      'fineAmount': double.parse(_fineAmountController.text),
-      'finePercentage': _finePercentage,
-      'category': _selectedCategory,
-    };
+  void _handleCreateGoal() {
+    if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedDate == null) {
+        _showErrorSnackBar('Please select a withdraw date');
+        return;
+      }
+      if (_selectedCategory == null) {
+        _showErrorSnackBar('Please select a category');
+        return;
+      }
+      _createGoal();
+    }
+  }
 
-    print('Goal created: $goal');
+  void _createGoal() async {
+    setState(() {
+      _isLoading = true;
+    });
 
-    // Show success message
+    try {
+      final targetAmount = double.parse(_targetAmountController.text);
+      final finePercentage = double.parse(_finePercentageController.text);
+
+      // Calculate fine amount just for display/logging purposes
+      final fineAmount = (targetAmount * finePercentage / 100);
+
+      print({
+        'name': _goalTitleController.text.trim(),
+        'objective': targetAmount,
+        'deadline': _selectedDate,
+        'fine_percentage': finePercentage, // Log percentage
+        'fine_amount_display': fineAmount, // Log calculated amount for reference
+        'category': _selectedCategory
+      });
+
+      // Pass the percentage to the API, not the calculated amount
+      final result = await UserService.createTarget(
+        name: _goalTitleController.text.trim(),
+        objective: targetAmount,
+        deadline: _selectedDate!,
+        finePercentage: finePercentage, // Pass percentage
+        category: _selectedCategory!,
+      );
+
+      if (result['success'] == true) {
+        _showSuccessSnackBar(result['message'] ?? 'Goal created successfully!');
+        Navigator.pop(context, true);
+      } else {
+        _showErrorSnackBar(result['message'] ?? 'Failed to create goal');
+      }
+    } catch (e) {
+      _showErrorSnackBar('An error occurred: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Goal created successfully!'),
+        content: Text(message),
         backgroundColor: const Color(0xFF4ECDC4),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
+  }
 
-    // Navigate back or to goals list
-    Navigator.pop(context);
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
   }
 }
