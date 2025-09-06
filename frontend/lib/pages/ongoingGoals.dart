@@ -191,7 +191,7 @@ class _PersonalGoalsScreenState extends State<PersonalGoalsScreen> {
                               Navigator.pushNamed(context, '/completedGoals');
                             },
                             child: _buildTabButton(
-                              'Completed G',
+                              'Completed Goals',
                               Icons.check,
                               false,
                               Colors.grey[600]!,

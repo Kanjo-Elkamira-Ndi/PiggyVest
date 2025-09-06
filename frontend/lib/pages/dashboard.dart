@@ -247,59 +247,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              // To do notification
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF3E0),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'To do: 2/10',
-                            style: TextStyle(
-                              color: Color(0xFFFF8F00),
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Complete your account setup',
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'See pending',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.grey[600],
-                          size: 12,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
 
               const SizedBox(height: 20),
 
@@ -321,17 +268,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Join Nkwa\'s Back-to-School Savings Challenge Group!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+
                           const SizedBox(height: 8),
                           const Text(
-                            'Save 1,000 FCFA or more daily to win scholarships and other prizes!',
+                            'Save 1,000 FCFA or more daily to win cool prizes!',
                             style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
                         ],
@@ -381,7 +321,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Expanded(
                           child: _buildQuickActionCard(
                             icon: Icons.savings_outlined,
-                            title: 'Savings',
+                            title: 'Goals',
                             backgroundColor: const Color(0xFFE8F5E8),
                             iconColor: const Color(0xFF4CAF50),
                             onTap: () {
@@ -397,7 +337,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Expanded(
                           child: _buildQuickActionCard(
                             icon: Icons.receipt_long_outlined,
-                            title: 'Budgeting',
+                            title: 'Savings',
                             backgroundColor: const Color(0xFFE3F2FD),
                             iconColor: const Color(0xFF2196F3),
                             onTap: () {},
@@ -421,7 +361,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Expanded(
                           child: _buildQuickActionCard(
                             icon: Icons.account_balance_wallet_outlined,
-                            title: 'Wallet (Flip)',
+                            title: 'Wallet',
                             backgroundColor: const Color(0xFFFFF3E0),
                             iconColor: const Color(0xFFFF9800),
                             onTap: () {

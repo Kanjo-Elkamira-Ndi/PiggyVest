@@ -66,7 +66,7 @@ class FlipScreen extends StatelessWidget {
                   children: [
                     // Title
                     Text(
-                      ' Flip',
+                      'Your Wallet',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

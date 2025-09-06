@@ -43,7 +43,7 @@ class _SavingsScreenState extends State<SavingsScreen> {
                     ),
                     const SizedBox(width: 20),
                     const Text(
-                      'Savings',
+                      'Goals',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -215,8 +215,8 @@ class _SavingsScreenState extends State<SavingsScreen> {
                         icon: Icons.shopping_bag_outlined,
                         iconColor: const Color(0xFF8B5CF6),
                         iconBackground: const Color(0xFFF5F3FF),
-                        title: 'Reserves',
-                        subtitle: 'Next free withdrawal date August 31st 2025',
+                        title: 'Topup',
+                        subtitle: 'Topup your account for future use',
                         amount: 'FCFA 0',
                         onTap: () {
                           // Navigate to reserves
@@ -230,54 +230,7 @@ class _SavingsScreenState extends State<SavingsScreen> {
 
               const SizedBox(height: 30),
 
-              // View more ways to save
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showMoreWays = !_showMoreWays;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'View more ways to save',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          _showMoreWays
-                              ? Icons.keyboard_arrow_up
-                              : Icons.keyboard_arrow_down,
-                          color: Colors.black54,
-                          size: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+
 
               // Additional savings options (shown when expanded)
               if (_showMoreWays) ...[
